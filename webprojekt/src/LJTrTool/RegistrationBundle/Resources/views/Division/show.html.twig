@@ -1,0 +1,24 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ division.divisionName|e }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2>Gliederung {{ division.divisionName|e }}</h2>
+    </div>
+
+    <div class="container">
+        <h3>Veranstaltungen: {{ division.approvals|length }}</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <ul class="list-group">
+                    {% for approval in division.approvals %}
+                        <li class="list-group-item"><span class="badge"></span>
+                            {{ approval.event.eventName }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

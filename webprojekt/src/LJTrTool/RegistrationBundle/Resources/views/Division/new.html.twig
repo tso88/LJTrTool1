@@ -1,0 +1,24 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}LJTrToolRegistrationBundle:Event:new{% endblock %}
+
+{% block body %}
+
+    <h1>Welcome to the Person:new page</h1>
+
+    {{ form_start(form, { 'attr': {'class': 'form-horizontal '}}) }}
+        <fieldset>
+            <div class="form-group">
+                {{ form_label(form.divisionName, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.divisionName, {'attr': {'class': 'form-control', 'placeholder': 'Gliederungsname'}}) }}
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                {{ form_widget(form.Anlegen, {'attr': {'class': 'btn btn-default'}}) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

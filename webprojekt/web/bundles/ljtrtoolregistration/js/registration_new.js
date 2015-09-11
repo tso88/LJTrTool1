@@ -1,0 +1,1 @@
+$('#ljtrtool_registrationbundle_registration_attendanceTimes').find(':checkbox').prop('checked', true);

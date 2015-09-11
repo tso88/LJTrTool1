@@ -1,0 +1,60 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}{{ roleApproval.role.displayName|e }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Rolle {{ roleApproval.role.displayName|e }}</h1>
+    </div>
+
+    <div class="container">
+        <h3>Allgemeines</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>Name:</dt>
+                    <dd>{{ roleApproval.role.displayName|e }}</dd>
+
+                    {% if roleApproval.registrationStartTime is not empty %}
+                        <dt>Anmeldestartzeit:</dt>
+                        <dd>{{ roleApproval.registrationStartTime|date('d.m.Y') }}</dd>
+                    {% endif %}
+                    {% if roleApproval.registrationStartTime is not empty %}
+                        <dt>Anmeldeendzeit:</dt>
+                        <dd>{{ roleApproval.registrationEndTime|date('d.m.Y') }}</dd>
+                    {% endif %}
+                    <dt>Bedingungen:</dt>
+                    <dd>
+                        {% if roleApproval.role.conditions|length > 0 %}
+                            {% for condition in roleApproval.role.conditions %}
+                                {{ condition.displayName|e }}<br />
+                            {% endfor %}
+                        {% else %}
+                            keine
+                        {% endif %}
+                    </dd>
+                    <dt>Bewerbungstext</dt>
+                    <dd></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h3>Orga</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>Kurzbezeichnung</dt>
+                    <dd>{{ roleApproval.role.roleName|e }}</dd>
+                    <dt>Infotext Orga</dt>
+                    <dd></dd>
+                    <dt>Status:</dt>
+                    <dd>{% if roleApproval.showRole %}aktiv{% else %}deaktiviert{% endif %}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

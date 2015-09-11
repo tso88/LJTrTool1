@@ -1,0 +1,53 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/confirm.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}LJTrToolRegistrationBundle:Person:index{% endblock %}
+
+{% block body %}
+<h1>Welcome to the Person:index page</h1>
+    <table class="table table-hover">
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Vorname</th>
+            <th>Gliederung</th>
+            <th style="text-align: right">
+                <form method="GET" action="{{ path('person_new') }}" accept-charset="UTF-8" style="display:inline">
+                    <button class="btn btn-xs btn-success" type="submit">
+                        <i class="glyphicon glyphicon-plus"></i> Neu
+                    </button>
+                </form>
+            </th>
+        </tr>
+        {% for person in persons %}
+            <tr>
+                <td><img style="width: 20px; height: auto" src="/{% if person.path is not null %}{{ person.WebPath }}{% else %}{{ person.uploadDir }}/dummy.jpg{% endif %}"></td>
+                <td><a href="{{ path('person_show', {'personId': person.personId}) }}">{{ person.name|e }}</a></td>
+                <td>{{ person.firstname|e }}</td>
+                <td>
+                    {% if person.division is not null %}
+                        {{ person.division.divisionName|e }}
+                    {% endif %}
+                </td>
+                <td style="text-align: right">
+                    <form method="GET" action="{{ path('person_edit', {'personId': person.personId}) }}" accept-charset="UTF-8" style="display:inline">
+                        <button class="btn btn-xs btn-primary" type="submit">
+                            <i class="glyphicon glyphicon-pencil"></i> Ändern
+                        </button>
+                    </form>
+                    <form method="GET" action="{{ path('person_delete', {'personId': person.personId}) }}" accept-charset="UTF-8" style="display:inline">
+                        <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Person löschen" data-message="Möchtest du die {{ person.firstname }} {{ person.name }} {% if person.division is not null %}aus {{ person.division.divisionName }}{% endif %} wirklich löschen?">
+                            <i class="glyphicon glyphicon-trash"></i> Löschen
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

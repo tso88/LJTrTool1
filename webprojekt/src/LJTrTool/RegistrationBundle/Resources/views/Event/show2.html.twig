@@ -1,0 +1,208 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/confirm.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}{{ event.eventName|e }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>{{ event.eventName|e }}</h1>
+        {% if event.startTime is not empty %}
+            <h4>
+                {{ event.startTime|date('d.m.Y') }}
+                {% if event.endTime is not empty %}
+                    bis {{ event.endTime|date('d.m.Y') }}
+                {% endif %}
+            </h4>
+        {% endif %}
+        {% if event.description is not empty %}
+            {{ event.description|nl2br }}
+        {% endif %}
+    </div>
+
+    {% if registrations|length > 0 %}
+        <div class="container">
+            <h3>Anmeldung</h3>
+            <div class="row">
+                <table class="table table-hover table-bordered">
+                    <tr>
+                        <th>Anmelderolle</th>
+                        <th>Anforderungen</th>
+                        <th>Anmelde-/Abmeldezeitraum</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {% for registration in registrations %}
+                        <tr>
+                            <td>{{ registration.roleApproval.role.displayName }}</td>
+                            <td>
+                                {% if registration.roleApproval.role.conditions|length > 0 %}
+                                    {% for condition in registration.roleApproval.role.conditions %}
+                                        {{ condition.displayName|e }}<br />
+                                    {% endfor %}
+                                {% else %}
+                                    keine
+                                {% endif %}
+                            </td>
+                            <td style="border-right: 0;">
+
+                                <!-- aktiv -->
+                                {% if "now"|date('YmdHi') >= registration.roleApproval.registrationStartTime|date('YmdHi') and registration.roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                    {% if registration.roleApproval.registrationEndTime|date('H:i') == '00:00' %}
+                                        {{ registration.roleApproval.registrationEndTime|date('d.m.Y') }}
+                                    {% else %}
+                                        {{ registration.roleApproval.registrationEndTime|date('d.m.Y H:i') }}
+                                    {% endif %}
+                                    (noch {{ date(registration.roleApproval.registrationEndTime).diff(date("now")).days }}
+                                    {% if date(registration.roleApproval.registrationEndTime).diff(date("now")).days == 1 %} Tag {% else %} Tage{% endif %}
+                                    {% if date(registration.roleApproval.registrationEndTime).diff(date("now")).days <= 2 %}
+                                        {{ date(registration.roleApproval.registrationEndTime).diff(date("now")).h }}
+                                        {% if date(registration.roleApproval.registrationEndTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                        {{ date(registration.roleApproval.registrationEndTime).diff(date("now")).i }}
+                                        {% if date(registration.roleApproval.registrationEndTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                    {% endif %}
+                                    )
+                                {% elseif "now"|date('YmdHi') < registration.roleApproval.registrationStartTime|date('YmdHi') %}
+                                    {% if registration.roleApproval.registrationStartTime|date('H:i') == '00:00' %}
+                                        {{ registration.roleApproval.registrationStartTime|date('d.m.Y') }}
+                                    {% else %}
+                                        {{ registration.roleApproval.registrationStartTime|date('d.m.Y H:i') }}
+                                    {% endif %}
+                                    bis
+                                    {% if registration.roleApproval.registrationEndTime|date('H:i') == '00:00' %}
+                                        {{ registration.roleApproval.registrationEndTime|date('d.m.Y') }}
+                                    {% else %}
+                                        {{ registration.roleApproval.registrationEndTime|date('d.m.Y H:i') }}
+                                    {% endif %}
+                                    in {{ date(registration.roleApproval.registrationStartTime).diff(date("now")).days }}
+                                    {% if date(registration.roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                    )
+                                {% elseif "now"|date('YmdHi') > registration.roleApproval.registrationEndTime|date('YmdHi') %}
+                                    abgelaufen
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for attendanceTime in registration.attendanceTimes %}
+                                    {{ attendanceTime.getTime() }}<br />
+                                {% endfor %}
+                            </td>
+                            <td style="text-align: right;border-left: 0;">
+                                <!-- aktiv -->
+                                {% if "now"|date('YmdHi') >= registration.roleApproval.registrationStartTime|date('YmdHi') and registration.roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                    <form method="GET" action="{{ path('registration_delete', {'registrationId': registration.registrationId}) }}" accept-charset="UTF-8" style="display:inline">
+                                        <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Abmeldung" data-message="Möchtest du dich wirklich als {{ registration.roleApproval.role.DisplayName }} für die Veranstaltung {{ event.eventName }} abmelden?">
+                                            <i class="glyphicon glyphicon-list-alt"></i> Abmelden
+                                        </button>
+                                    </form>
+
+                                {% elseif "now"|date('YmdHi') > registration.roleApproval.registrationEndTime|date('YmdHi') %}
+                                    <form style="display:inline">
+                                        <button class="btn btn-xs btn-error" type="button">
+                                            <i class="glyphicon glyphicon-remove"></i> keine Abmeldung mehr möglich
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if event.roleApprovals|length > 0 %}
+        <div class="container">
+            <h3>Mögliche Anmeldungen</h3>
+            {% if registrations|length > 0 %}
+                Du bist angemeldet als {% for registration in registrations %}{{ registration.roleApproval.role.displayName }}. {% endfor %}
+            {% else %}
+                Melde dich für die Veranstaltung {{ event.eventName|e }} an.
+            {% endif %}
+
+            <div class="row">
+                <table class="table table-hover table-bordered">
+                    <tr>
+                        <th>Anmelderolle</th>
+                        <th>Anforderungen</th>
+                        <th>Anmeldezeitraum</th>
+                        <th></th>
+                    </tr>
+                    {% for roleApproval in event.roleApprovals %}
+                        <tr{% if registrations|length > 0 %}
+                            {% for registration in registrations %}
+                                {% if registration.roleApproval.roleApprovalId == roleApproval.roleApprovalId %}
+                                    class="hidden"
+                                {% endif %}
+                            {% endfor %}
+                            {% endif %}>
+                            <td>{{ roleApproval.role.displayName }}</td>
+                            <td>
+                                {% if roleApproval.role.conditions|length > 0 %}
+                                    {% for condition in roleApproval.role.conditions %}
+                                        {{ condition.displayName|e }}<br />
+                                    {% endfor %}
+                                {% else %}
+                                    keine
+                                {% endif %}
+                            </td>
+                            <td style="border-right: 0;">
+                                {% if roleApproval.registrationStartTime|date('H:i') == '00:00' %}
+                                    {{ roleApproval.registrationStartTime|date('d.m.Y') }}
+                                {% else %}
+                                    {{ roleApproval.registrationStartTime|date('d.m.Y H:i') }}
+                                {% endif %}
+                                bis
+                                {% if roleApproval.registrationEndTime|date('H:i') == '00:00' %}
+                                    {{ roleApproval.registrationEndTime|date('d.m.Y') }}
+                                {% else %}
+                                    {{ roleApproval.registrationEndTime|date('d.m.Y H:i') }}
+                                {% endif %}
+                                (
+                                <!-- aktiv -->
+                                {% if "now"|date('YmdHi') >= roleApproval.registrationStartTime|date('YmdHi') and roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                    noch {{ date(roleApproval.registrationEndTime).diff(date("now")).days }}
+                                    {% if date(roleApproval.registrationEndTime).diff(date("now")).days == 1 %} Tag {% else %} Tage{% endif %}
+                                    {% if date(roleApproval.registrationEndTime).diff(date("now")).days <= 2 %}
+                                        {{ date(roleApproval.registrationEndTime).diff(date("now")).h }}
+                                        {% if date(roleApproval.registrationEndTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                        {{ date(roleApproval.registrationEndTime).diff(date("now")).i }}
+                                        {% if date(roleApproval.registrationEndTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                    {% endif %}
+                                    {% elseif "now"|date('YmdHi') < roleApproval.registrationStartTime|date('YmdHi') %}
+                                        in {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                        {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                        {% if date(roleApproval.registrationStartTime).diff(date("now")).days <= 2 %}
+                                            {{ date(roleApproval.registrationStartTime).diff(date("now")).h }}
+                                            {% if date(roleApproval.registrationStartTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                            {{ date(roleApproval.registrationStartTime).diff(date("now")).i }}
+                                            {% if date(roleApproval.registrationStartTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                        {% endif %}
+                                    {% elseif "now"|date('YmdHi') > roleApproval.registrationEndTime|date('YmdHi') %}
+                                        abgelaufen seit
+                                        {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                        {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                {% endif %}
+                                )
+                            </td>
+                            <td style="text-align: right;border-left: 0;">
+                                <!-- aktiv -->
+                                {% if "now"|date('YmdHi') >= roleApproval.registrationStartTime|date('YmdHi') and roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                    <form method="GET" action="{{ path('registration_new', {'eventLinkName': event.eventLinkName, 'roleApproval': roleApproval.roleApprovalId}) }}" accept-charset="UTF-8" style="display:inline">
+                                        <button class="btn btn-xs btn-primary" type="submit">
+                                            <i class="glyphicon glyphicon-list-alt"></i> Anmelden
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{# app/Resources/views/Security/login.html.twig #}
+{% extends "::base.html.twig" %}
+
+{% block title %}LJTrToolRegistrationBundle:Registration:new{% endblock %}
+
+{% block body %}
+    {% if error %}
+        <div>{{ error.message }}</div>
+    {% endif %}
+
+    <form action="{{ path('login_check') }}" method="post" role="form">
+        <div class="form-group">
+            <label for="username"><span class="glyphicon glyphicon-user"></span> Username:</label>
+            <input type="text" class="form-control" id="username" name="_username" value="{{ last_username }}" placeholder="Username" />
+        </div>
+        <div class="form-group">
+            <label for="password"><span class="glyphicon glyphicon-eye-open"></span> Password:</label>
+            <input type="password" class="form-control" id="password" name="_password" />
+        </div>
+        <div class="form-group">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        </div>
+
+        <div class="checkbox">
+            <label for="remember_me"><input type="checkbox" id="remember_me" name="_remember_me" checked="checked" />Remember me</label>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block" name="login"><span class="glyphicon glyphicon-off"></span> Login</button>
+    </form>
+{% endblock %}

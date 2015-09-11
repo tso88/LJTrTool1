@@ -1,0 +1,5 @@
+_assetic:
+    resource: .
+    type: assetic
+_app:
+    resource: /share/HDA_DATA/Web/webprojekt/app/config/routing_dev.yml

@@ -1,0 +1,32 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}LJTrToolRegistrationBundle:Registration:show{% endblock %}
+
+{% block body %}
+    <h1>Welcome to the Registration:show page</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>Veranstaltung:</dt>
+                    <dd>{{ registration.event.eventName|e }}</dd>
+                    <dt>Rolle:</dt>
+                    <dd>{{ registration.roleApproval.role.displayName|e }}</dd>
+                    <dt>Person:</dt>
+                    <dd>{{ registration.person.firstname|e }} {{ registration.person.name|e }}
+                        ({{ registration.person.division.divisionName| default("-") }})</dd>
+
+                    {% if registration.registrationTime is not empty %}
+                        <dt>Registrierungsdatum:</dt>
+                        <dd>{{ registration.registrationTime|date('d.m.Y') }}</dd>
+                    {% endif %}
+                    {% if registration.approval is not null %}
+                        <dt>approval:</dt>
+                        <dd>{% if registration.approval == true %}1{% else %}0{% endif %}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

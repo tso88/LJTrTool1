@@ -1,0 +1,169 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts  'bundles/dateTimepicker/js/bootstrap-datetimepicker.min.js'
+                    'bundles/dateTimepicker/js/locales/bootstrap-datetimepicker.de.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/registration_new.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts 'bundles/bootstrap-filestyle/bootstrap-filestyle.min.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}LJTrToolRegistrationBundle:Registration:new{% endblock %}
+
+{% block body %}
+<h1>Anmeldung zur Veranstaltung {{ event.eventName|e }}</h1>
+
+    {{ form_start(form, { 'attr': {'class': 'form-horizontal '}}) }}
+        <fieldset>
+            <div class="form-group">
+                {{ form_label(form.event, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.event, {'attr': {'class': 'form-control', 'placeholder': 'Veranstaltung'}}) }}
+                </div>
+            </div>
+
+            <!-- Person Form Block open -->
+            <div class="form-group">
+                {{ form_label(form.person.name, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.name, {'attr': {'class': 'form-control', 'placeholder': 'Nachname'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.firstname, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.firstname, {'attr': {'class': 'form-control', 'placeholder': 'Vorname' }}) }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.person.birthday, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.birthday, {'attr': {'class': 'form-control', 'placeholder': 'Geburtstag'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.division, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.division, {'attr': {'class': 'form-control', 'placeholder': 'Gliederung'}}) }}
+                    <span class="help-block">Für Wettkampfschwimmer unbedingt die Wettkampfgliederung angeben.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.gender, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.gender, {'attr': {'class': 'radio-inline'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.feeding, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.feeding, {'attr': {'class': 'radio-inline', 'placeholder': 'Ernährung'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.file, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.file, {'attr': {'class': 'filestyle', 'placeholder': 'Bild'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.email, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.email, {'attr': {'class': 'form-control', 'placeholder': 'E-Mail Adresse'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person.phone, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person.phone, {'attr': {'class': 'form-control', 'placeholder': 'Telefonnummer'}}) }}
+                </div>
+            </div>
+
+            <fieldset class="no_address">
+                <div class="form-group">
+                    {{ form_label(form.person.address, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        <a id="person_new_showAddress">
+                            <span class="glyphicon glyphicon-plus" style="height: 34px;padding: 6px 12px;line-height: 1.42857143;color: #555;"/>
+                            Hinzufügen
+                        </a>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="address" style="display: none;">
+                <div class="form-group">
+                    {{ form_label(form.person.address, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        <a id="person_new_hideAddress">
+                            <span class="glyphicon glyphicon-plus" style="height: 34px;padding: 6px 12px;line-height: 1.42857143;color: #555;"/>
+                            Entfernen
+                        </a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.person.address.street, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        {{ form_widget(form.person.address.street, {'attr': {'class': 'form-control', 'placeholder': 'Straße'}}) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.person.address.houseNumber, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        {{ form_widget(form.person.address.houseNumber, {'attr': {'class': 'form-control', 'placeholder': 'Hausnummer'}}) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.person.address.postcode, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        {{ form_widget(form.person.address.postcode, {'attr': {'class': 'form-control', 'placeholder': 'PLZ'}}) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.person.address.city, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                    <div class="col-sm-10">
+                        {{ form_widget(form.person.address.city, {'attr': {'class': 'form-control', 'placeholder': 'Ort'}}) }}
+                    </div>
+                </div>
+            </div>
+            <!-- Person Form Block close -->
+
+            <div class="form-group">
+                {{ form_label(form.roleApproval, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.roleApproval, {'attr': {'class': 'form-control', 'placeholder': 'Rolle' }}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.attendanceTimes, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.attendanceTimes, {'attr': {'class': 'checkbox-inline', 'checked': 'checked', 'placeholder': 'Zeiten', 'style': 'margin-left:2px;' }}) }}
+                </div>
+            </div>
+
+            
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="checkbox">
+                        {{ form_widget(form.condition, {'attr': {'style': 'margin-left:2px;' }}) }}
+                        {{ form_label(form.condition, null, {'label_attr': {'style': 'margin-left:8px;' }}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    {{ form_widget(form.Submit, {'attr': {'class': 'btn btn-default'}}) }}
+                </div>
+            </div>
+        </fieldset>
+    {{ form_end(form, {'render_rest': false}) }}
+
+{% endblock %}

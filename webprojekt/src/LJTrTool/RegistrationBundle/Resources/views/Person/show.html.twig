@@ -1,0 +1,117 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}LJTrToolRegistrationBundle:Person:show{% endblock %}
+
+{% block body %}
+    <h1>Persönliche Daten</h1>
+    <div class="container">
+        <h3>Persönliches</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>Name:</dt>
+                    <dd>{{ person.firstname|e }} {{ person.name|e }}</dd>
+                    {% if person.birthday is not empty %}
+                        <dt>Geburtstag:</dt>
+                        <dd>{{ person.birthday|date('d.m.Y') }}</dd>
+                    {% endif %}
+                    {% if person.division is not null %}
+                        <dt>Gliederung:</dt>
+                        <dd>{{ person.division.divisionName|e }}</dd>
+                    {% endif %}
+                    {% if person.gender is not null %}
+                        <dt>Geschlecht:</dt>
+                        <dd>{% if person.gender == "w" %}weiblich{% elseif person.gender == "m" %}männlich{% endif %}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+            <div class="col-sm-6">
+                <img style="width: 100px; height: auto" src="/{% if person.path is not null %}{{ person.WebPath }}{% else %}{{ person.uploadDir }}/dummy.jpg{% endif %}">
+            </div>
+        </div>
+    </div>
+
+
+    {% if person.address is not null or person.email is not null or person.phone is not null %}
+        <div class="container">
+            <h3>Kontakt</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    <dl class="dl-horizontal">
+                        {% if person.email is not null %}
+                            <dt>Email:</dt>
+                            <dd>{{ person.email |e }}</dt>
+                        {% endif %}
+                        {% if person.phone is not null %}
+                            <dt>Telefon:</dt>
+                            <dd>{{ person.phone |e }}</dt>
+                        {% endif %}
+
+                        {% if person.address is not null %}
+                            <dt>Adresse:</dt>
+                            <dd>
+                                {% if person.address.street is not null or person.address.city is not null %}
+                                    {{ person.address.street|e }} {{ person.address.houseNumber|e }}<br />
+                                {% endif %}
+                                {% if person.address.street is not null or person.address.city is not null %}
+                                    {{ person.address.postcode|e }} {{ person.address.city|e }}
+                                {% endif %}
+                            </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if person.feeding is not null %}
+        <div class="container">
+            <h3>Besonderheiten</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    <dl class="dl-horizontal">
+                        {% if person.feeding is not null %}
+                            <dt>Ernährung:</dt>
+                            <dd>{{ person.feeding.feedingName|e }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if person.accounts is not null %}
+        <div class="container">
+            <h3>Account</h3>
+            <div class="row">
+                {% if person.accounts|length > 1 %}
+                    <table class="table table-hover">
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>aktiv</th>
+                        </tr>
+                        {% for account in person.accounts %}
+                            <tr>
+                                <td>{{ account.username|e }}</td>
+                                <td>{{ account.email|e }}</td>
+                                <td>{% if account.isActive == 1 %}aktiviert{% else %}deaktiviert{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% else %}
+                    <div class="col-sm-6">
+                        {% if person.accounts[0].username is not null %}
+                            <dl class="dl-horizontal">
+                                <dt>Benutzername:</dt>
+                                <dd>{{ person.accounts[0].username|e }}{% if person.accounts[0].isActive == 0 %}(deaktiviert){% endif %}</dd>
+                            </dl>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

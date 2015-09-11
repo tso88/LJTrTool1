@@ -1,0 +1,23 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}Anforderung{% endblock %}
+
+{% block body %}
+      <div class="container">
+        <h3>Anforderungen</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>Name:</dt>
+                    <dd>{{ condition.displayName|e }}</dd>
+                    <dt>Interner Name:</dt>
+                    <dd>{{ condition.conditionName|e }}</dd>
+                    {% if condition.description is not null %}
+                        <dt>Beschreibung:</dt>
+                        <dd>{{ condition.description|e }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}

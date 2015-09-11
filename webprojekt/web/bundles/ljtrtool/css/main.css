@@ -1,0 +1,22 @@
+body {
+    padding-bottom: 30px;
+    /*padding-top: 70px;*/
+}
+
+.label,.glyphicon { margin-right:5px; }
+
+
+/* Person show*/
+
+.personLabels {
+    padding-right: 15px;
+    padding-left: 15px;
+    text-align: right;
+    width: 150px;
+    display: inline-block;
+}
+
+div.checkbox-inline > label, div.radio-inline > label {
+    margin-right: 40px;
+    font-weight: 100;
+}

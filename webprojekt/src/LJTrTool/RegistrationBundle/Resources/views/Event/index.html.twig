@@ -1,0 +1,50 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/confirm.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}LJTrToolRegistrationBundle:Person:index{% endblock %}
+
+{% block body %}
+<h1>Veranstaltungsübersicht</h1>
+    <table class="table table-hover">
+        <tr>
+            <th>Veranstaltungsname</th>
+            <th>Startzeit</th>
+            <th>Endzeit</th>
+            <th style="text-align: right">
+                <form method="GET" action="{{ path('event_new') }}" accept-charset="UTF-8" style="display:inline">
+                    <button class="btn btn-xs btn-success" type="submit">
+                        <i class="glyphicon glyphicon-plus"></i> Neu
+                    </button>
+                </form>
+            </th>
+        </tr>
+        {% for event in events %}
+            <tr>
+                <td><a href="{{ path('event_show', {'eventLinkName': event.eventLinkName|e}) }}">{{ event.eventName|e }}</a></td>
+                <td>{{ event.startTime|date('d.m.Y H:i') }}</td>
+                <td>{{ event.endTime|date('d.m.Y H:i') }}</td>
+                <td style="text-align: right">
+                    <form method="GET" action="{{ path('event_edit', {'eventLinkName': event.eventLinkName}) }}" accept-charset="UTF-8" style="display:inline">
+                        <button class="btn btn-xs btn-primary" type="submit">
+                            <i class="glyphicon glyphicon-pencil"></i> Ändern
+                        </button>
+                    </form>
+                    <form method="GET" action="{{ path('event_delete', {'eventLinkName': event.eventLinkName}) }}" accept-charset="UTF-8" style="display:inline">
+                        <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Event löschen" data-message="Möchtest du die Veranstaltung {{ event.eventName }} wirklich löschen?">
+                            <i class="glyphicon glyphicon-trash"></i> Löschen
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
+
+

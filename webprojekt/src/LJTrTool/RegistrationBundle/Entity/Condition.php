@@ -1,0 +1,171 @@
+<?php
+/**
+ *
+ *
+ * @author Original Author: Tim Sochart
+ * @author Further Authors:
+ * @version 0.1 at 18.02.15 20:36
+ * created on 16.02.15 20:13
+ */
+
+namespace LJTrTool\RegistrationBundle\Entity;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Class Condition
+ *
+ * @ORM\Table(name="REGISTRATION_CONDITION")
+ * @ORM\Entity
+ */
+class Condition
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="conditionId", type="bigint", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $conditionId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="conditionName", type="string", length=25, nullable=false)
+     */
+    private $conditionName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="displayName", type="string", length=50, nullable=false)
+     */
+    private $displayName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, nullable=false)
+     */
+    private $description;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="LJTrTool\RegistrationBundle\Entity\Role", mappedBy="conditions")
+     */
+    private $roles;
+
+    /**
+     * Add role
+     *
+     * @param Role $role
+     * @return Collection
+     */
+    public function addRole(Role $role)
+    {
+        $this->roles[] = $role;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getConditionId()
+    {
+        return $this->conditionId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConditionName()
+    {
+        return $this->conditionName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        return $this->displayName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param Role $role
+     */
+    public function removeRole(Role $role)
+    {
+        $this->roles->removeElement($role);
+    }
+
+    /**
+     * @param int $conditionId
+     */
+    public function setConditionId($conditionId)
+    {
+        $this->conditionId = $conditionId;
+    }
+
+    /**
+     * @param string $conditionName
+     */
+    public function setConditionName($conditionName)
+    {
+        $this->conditionName = $conditionName;
+    }
+
+    /**
+     * @param string $displayName
+     */
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @param Collection $roles
+     */
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+}

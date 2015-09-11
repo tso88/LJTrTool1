@@ -1,0 +1,63 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/registration_new.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}LJTrToolRegistrationBundle:Registration:new{% endblock %}
+
+{% block body %}
+<h1>Anmeldung zur Veranstaltung {{ event.eventName|e }}</h1>
+
+    {{ form_start(form, { 'attr': {'class': 'form-horizontal '}}) }}
+        <fieldset>
+            <div class="form-group">
+                {{ form_label(form.event, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.event, {'attr': {'class': 'form-control', 'placeholder': 'Veranstaltung'}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.person, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.person, {'attr': {'class': 'form-control', 'placeholder': 'Person'}}) }}
+                </div>
+                <div class="col-sm-10">
+
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.roleApproval, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.roleApproval, {'attr': {'class': 'form-control', 'placeholder': 'Rolle' }}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.attendanceTimes, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.attendanceTimes, {'attr': {'class': 'checkbox-inline', 'checked': 'checked', 'placeholder': 'Zeiten', 'style': 'margin-left:2px;' }}) }}
+                </div>
+            </div>
+
+            
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="checkbox">
+                        {{ form_widget(form.condition, {'attr': {'style': 'margin-left:2px;' }}) }}
+                        {{ form_label(form.condition, null, {'label_attr': {'style': 'margin-left:8px;' }}) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    {{ form_widget(form.Submit, {'attr': {'class': 'btn btn-default'}}) }}
+                </div>
+            </div>
+        </fieldset>
+    {{ form_end(form) }}
+
+{% endblock %}

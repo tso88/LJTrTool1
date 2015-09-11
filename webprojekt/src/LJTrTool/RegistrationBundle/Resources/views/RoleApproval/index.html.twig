@@ -1,0 +1,124 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/confirm.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}Veranstaltungsverwaltung {{ event.eventName|e }} - Anmeldung{% endblock %}
+
+{% block body %}
+    <h1>Veranstaltungsverwaltung {{ event.eventName|e }}</h1>
+
+    <ul class="nav nav-tabs">
+        <li role="presentation"><a href="{{ path('event_edit', {'eventLinkName': event.eventLinkName}) }}">Allgemeines</a></li>
+        <li role="presentation" class="active"><a href="{{ path('roleApproval_index', {'eventLinkName': event.eventLinkName}) }}">Anmeldungen</a></li>
+        <li role="presentation"><a href="#">Module</a></li>
+    </ul>
+
+    <br />
+    <div class="row">
+        <table class="table table-hover table-bordered">
+            <tr>
+                <th>Anmelderolle</th>
+                <th>Anforderungen</th>
+                <th>Anmeldezeitraum</th>
+                <th></th>
+                <th style="text-align: right">
+                    <form method="GET" action="{{ path('roleApproval_new', {'eventLinkName': event.eventLinkName}) }}" accept-charset="UTF-8" style="display:inline">
+                        <button class="btn btn-xs btn-success" type="submit">
+                            <i class="glyphicon glyphicon-plus"></i> Neu
+                        </button>
+                    </form>
+                </th>
+            </tr>
+            {% for roleApproval in event.roleApprovals %}
+                <tr class="
+                    {% if not roleApproval.showRole %}
+                        active
+                    {% elseif "now"|date('YmdHi') > roleApproval.registrationEndTime|date('YmdHi') %}
+                        active
+                    {% elseif "now"|date('YmdHi') < roleApproval.registrationStartTime|date('YmdHi') %}
+                        active
+                    {% else %}
+                        success
+                    {% endif %}">
+                    <td><a href="{{ path('roleApproval_show', {'eventLinkName': event.eventLinkName, 'roleApprovalId': roleApproval.roleApprovalId}) }}">{{ roleApproval.role.displayName }}</a></td>
+                    <td>
+                        {% if roleApproval.role.conditions|length > 0 %}
+                            {% for condition in roleApproval.role.conditions %}
+                                {{ condition.displayName|e }}<br />
+                            {% endfor %}
+                        {% else %}
+                            keine
+                        {% endif %}
+                    </td>
+                    <td style="border-right: 0;">
+                        {% if roleApproval.registrationStartTime is not null or roleApproval.registrationEndTime is not null %}
+
+                            {% if roleApproval.registrationStartTime|date('H:i') == '00:00' %}
+                                {{ roleApproval.registrationStartTime|date('d.m.Y') }}
+                            {% else %}
+                                {{ roleApproval.registrationStartTime|date('d.m.Y H:i') }}
+                            {% endif %}
+                            bis
+                            {% if roleApproval.registrationEndTime|date('H:i') == '00:00' %}
+                                {{ roleApproval.registrationEndTime|date('d.m.Y') }}
+                            {% else %}
+                                {{ roleApproval.registrationEndTime|date('d.m.Y H:i') }}
+                            {% endif %}
+                            (
+                            <!-- aktiv -->
+                            {% if "now"|date('YmdHi') >= roleApproval.registrationStartTime|date('YmdHi') and roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                noch {{ date(roleApproval.registrationEndTime).diff(date("now")).days }}
+                                {% if date(roleApproval.registrationEndTime).diff(date("now")).days == 1 %} Tag {% else %} Tage{% endif %}
+                                {% if date(roleApproval.registrationEndTime).diff(date("now")).days <= 2 %}
+                                    {{ date(roleApproval.registrationEndTime).diff(date("now")).h }}
+                                    {% if date(roleApproval.registrationEndTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                    {{ date(roleApproval.registrationEndTime).diff(date("now")).i }}
+                                    {% if date(roleApproval.registrationEndTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                {% endif %}
+                            {% elseif "now"|date('YmdHi') < roleApproval.registrationStartTime|date('YmdHi') %}
+                                in {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                {% if date(roleApproval.registrationStartTime).diff(date("now")).days <= 2 %}
+                                    {{ date(roleApproval.registrationStartTime).diff(date("now")).h }}
+                                    {% if date(roleApproval.registrationStartTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                    {{ date(roleApproval.registrationStartTime).diff(date("now")).i }}
+                                    {% if date(roleApproval.registrationStartTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                {% endif %}
+                            {% elseif "now"|date('YmdHi') > roleApproval.registrationEndTime|date('YmdHi') %}
+                                abgelaufen <!-- seit
+                                {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                -->
+                            {% endif %}
+                            )
+                        {% else %}
+                            kein Zeitraum angegeben
+                        {% endif %}
+                    </td>
+                    <td>{% if roleApproval.showRole %}aktiviert{% else %}deaktiviert{% endif %}</td>
+                    <td style="text-align: right">
+                        <form method="GET" action="{{ path('roleApproval_edit', {'eventLinkName': event.eventLinkName, 'roleApprovalId': roleApproval.roleApprovalId}) }}" accept-charset="UTF-8" style="display:inline">
+                            <button class="btn btn-xs btn-primary" type="submit">
+                                <i class="glyphicon glyphicon-pencil"></i> Ändern
+                            </button>
+                        </form>
+                        <form method="GET" action="{{ path('roleApproval_delete', {'eventLinkName': event.eventLinkName, 'roleApprovalId': roleApproval.roleApprovalId}) }}" accept-charset="UTF-8" style="display:inline">
+
+                            <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Rolle löschen" data-message="Möchtest du die Rolle {{ roleApproval.role.displayName }} wirklich löschen?">
+                                <i class="glyphicon glyphicon-trash"></i> Löschen
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock %}
+
+

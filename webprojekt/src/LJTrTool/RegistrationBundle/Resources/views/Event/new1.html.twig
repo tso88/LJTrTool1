@@ -1,0 +1,168 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts  'bundles/dateTimepicker/js/bootstrap-datetimepicker.min.js'
+                    'bundles/dateTimepicker/js/locales/bootstrap-datetimepicker.de.js'%}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/event_new.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}Neue Veranstaltung{% endblock %}
+
+{% block body %}
+<h1>Veranstaltung anlegen</h1>
+
+    {{ form_start(form, { 'attr': {'class': 'form-horizontal '}}) }}
+        <fieldset>
+            <legend>Allgemeines:</legend>
+            <div class="form-group">
+                {{ form_label(form.eventLinkName, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.eventLinkName, {'attr': {'class': 'form-control', 'placeholder': 'Veranstaltungskürzel'}}) }}
+                    <span class="help-block">Veranstaltungskürzel muss eindeutig sein und wird im Link geführt (z.B. ljtr2015).</span>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.eventName, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.eventName, {'attr': {'class': 'form-control', 'placeholder': 'Veranstaltungsname'}}) }}
+                    <span class="help-block">Veranstaltungsname wird den Teilnehmern angezeigt.</span>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.startTime, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.startTime, {'attr': {'class': 'form-control form_datetime', 'placeholder': ''}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.endTime, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.endTime, {'attr': {'class': 'form-control form_datetime', 'placeholder': ''}}) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.description, null, {'label_attr': {'class':'control-label col-sm-2'}}) }}
+                <div class="col-sm-10">
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Beschreibung'}}) }}
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                {{ form_widget(form.Anlegen, {'attr': {'class': 'btn btn-default'}}) }}
+            </div>
+        </div>
+    {{ form_end(form) }}
+
+    {% if event is not null %}
+        <fieldset>
+            <legend>Verfügbare Rollen:</legend>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <table class="table table-hover table-bordered">
+                        <tr>
+                            <th>Anmelderolle</th>
+                            <th>Anforderungen</th>
+                            <th>Anmeldezeitraum</th>
+                            <th></th>
+                            <th>
+                                <form method="GET" action="{{ path('roleApproval_new', {'eventLinkName': event.eventLinkName}) }}" accept-charset="UTF-8" style="display:inline">
+                                    <button class="btn btn-xs btn-success" type="submit">
+                                        <i class="glyphicon glyphicon-plus"></i> Neu
+                                    </button>
+                                </form>
+                            </th>
+                        </tr>
+                        {% for roleApproval in event.roleApprovals %}
+                            <tr class="
+                            {% if not roleApproval.showRole %}
+                                active
+                            {% elseif "now"|date('YmdHi') > roleApproval.registrationEndTime|date('YmdHi') %}
+                                active
+                            {% elseif "now"|date('YmdHi') < roleApproval.registrationStartTime|date('YmdHi') %}
+                                active
+                            {% else %}
+                                success
+                            {% endif %}">
+                                <td><a href="{{ path('roleApproval_show', {'eventLinkName': app.request.attributes.get('_route_params')['eventLinkName'], 'roleApprovalId': roleApproval.roleApprovalId}) }}">{{ roleApproval.role.displayName }}</a></td>
+                                <td>
+                                    {% if roleApproval.role.conditions|length > 0 %}
+                                        {% for condition in roleApproval.role.conditions %}
+                                            {{ condition.displayName|e }}<br />
+                                        {% endfor %}
+                                    {% else %}
+                                        keine
+                                    {% endif %}
+                                </td>
+                                <td style="border-right: 0;">
+                                    {% if roleApproval.registrationStartTime is not null or roleApproval.registrationEndTime is not null %}
+
+                                        {% if roleApproval.registrationStartTime|date('H:i') == '00:00' %}
+                                            {{ roleApproval.registrationStartTime|date('d.m.Y') }}
+                                        {% else %}
+                                            {{ roleApproval.registrationStartTime|date('d.m.Y H:i') }}
+                                        {% endif %}
+                                        bis
+                                        {% if roleApproval.registrationEndTime|date('H:i') == '00:00' %}
+                                            {{ roleApproval.registrationEndTime|date('d.m.Y') }}
+                                        {% else %}
+                                            {{ roleApproval.registrationEndTime|date('d.m.Y H:i') }}
+                                        {% endif %}
+                                        <br/>(
+                                        <!-- aktiv -->
+                                        {% if "now"|date('YmdHi') >= roleApproval.registrationStartTime|date('YmdHi') and roleApproval.registrationEndTime|date('YmdHi') >= "now"|date('YmdHi') %}
+                                            noch {{ date(roleApproval.registrationEndTime).diff(date("now")).days }}
+                                            {% if date(roleApproval.registrationEndTime).diff(date("now")).days == 1 %} Tag {% else %} Tage{% endif %}
+                                            {% if date(roleApproval.registrationEndTime).diff(date("now")).days <= 2 %}
+                                                {{ date(roleApproval.registrationEndTime).diff(date("now")).h }}
+                                                {% if date(roleApproval.registrationEndTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                                {{ date(roleApproval.registrationEndTime).diff(date("now")).i }}
+                                                {% if date(roleApproval.registrationEndTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                            {% endif %}
+                                        {% elseif "now"|date('YmdHi') < roleApproval.registrationStartTime|date('YmdHi') %}
+                                            in {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                            {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                            {% if date(roleApproval.registrationStartTime).diff(date("now")).days <= 2 %}
+                                                {{ date(roleApproval.registrationStartTime).diff(date("now")).h }}
+                                                {% if date(roleApproval.registrationStartTime).diff(date("now")).h == 1 %}Stunde {% else %}Stunden{% endif %}
+                                                {{ date(roleApproval.registrationStartTime).diff(date("now")).i }}
+                                                {% if date(roleApproval.registrationStartTime).diff(date("now")).i == 1 %}Minute {% else %}Minuten{% endif %}
+                                            {% endif %}
+                                        {% elseif "now"|date('YmdHi') > roleApproval.registrationEndTime|date('YmdHi') %}
+                                            abgelaufen seit
+                                            {{ date(roleApproval.registrationStartTime).diff(date("now")).days }}
+                                            {% if date(roleApproval.registrationStartTime).diff(date("now")).days == 1 %} Tag {% else %} Tagen{% endif %}
+                                        {% endif %}
+                                        )
+                                    {% else %}
+                                        kein Zeitraum angegeben
+                                    {% endif %}
+                                </td>
+                                <td>{% if roleApproval.showRole %}A{% else %}D{% endif %}</td>
+                                <td>
+                                    <form method="GET" action="{{ path('roleApproval_edit', {'eventLinkName': event.eventLinkName, 'roleApprovalId': roleApproval.roleApprovalId}) }}" accept-charset="UTF-8" style="display:inline">
+                                        <button class="btn btn-xs btn-primary" type="submit">
+                                            <i class="glyphicon glyphicon-pencil"></i>
+                                        </button>
+                                    </form>
+                                    <form method="GET" action="{{ path('roleApproval_delete', {'eventLinkName': event.eventLinkName, 'roleApprovalId': roleApproval.roleApprovalId}) }}" accept-charset="UTF-8" style="display:inline">
+                                        <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Event löschen" data-message="Möchtest du die Veranstaltung {{ event.eventName }} wirklich löschen?">
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,80 @@
+# you can read more about security in the related section of the documentation
+# http://symfony.com/doc/current/book/security.html
+security:
+    # http://symfony.com/doc/current/book/security.html#encoding-the-user-s-password
+    encoders:
+        Symfony\Component\Security\Core\User\User: bcrypt
+        LJTrTool\RegistrationBundle\Entity\Account: bcrypt
+
+    # http://symfony.com/doc/current/book/security.html#hierarchical-roles
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        #in_memory:
+         #   memory:
+          #      users:
+           #         user:  { password: kitten, roles: [ 'ROLE_USER' ] }
+            #        admin1: { password: $2a$12$cyTWeE9kpq1PjqKFiWUZFuCRPwVyAZwm4XzMZ1qPUFl7/flCM3V0G, roles: [ 'ROLE_ADMIN' ] }
+        userlogin:
+            entity:
+                class: LJTrToolRegistrationBundle:Account
+                #property: username
+
+    #Remember me https://symfony.com/doc/current/cookbook/security/remember_me.html
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        # the login page has to be accessible for everybody
+        demo_login:
+            pattern:  ^/demo/secured/login$
+            security: false
+
+        # secures part of the application
+        demo_secured_area:
+            pattern:    ^/demo/secured/
+            # it's important to notice that in this case _demo_security_check and _demo_login
+            # are route names and that they are specified in the AcmeDemoBundle
+            form_login:
+                check_path: _demo_security_check
+                login_path: _demo_login
+            logout:
+                path:   _demo_logout
+                target: _demo
+            #anonymous: ~
+            #http_basic:
+            #    realm: "Secured Demo Area"
+
+        default:
+            anonymous: ~
+            http_basic: ~
+            provider: userlogin
+            form_login:
+                login_path: /login
+                check_path: /login_check
+                #CSRF Protection
+                csrf_provider: security.csrf.token_manager
+                #intention: a_private_string
+
+                #failure_path: login_failure
+                default_target_path: /home
+            logout:
+                path:   /logout
+                target: /events
+            remember_me:
+                key:      "RW5MGwq5ppEKYe5zEDFhXnpxS"
+                lifetime: 300 # 172800
+                path:     /
+                secure : true
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # below lines to always enable it.
+                #always_remember_me: true
+
+    access_control:
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="robots" content="noindex,nofollow" />
+        <title>{% block title %}{% endblock %}</title>
+
+        <link href="{{ asset('bundles/bootstrap/css/bootstrap.css') }}" rel="stylesheet" media="screen">
+
+        <!-- HTML5 Shim and Respond.js add IE8 support of HTML5 elements and media queries -->
+        {% include 'BraincraftedBootstrapBundle::ie8-support.html.twig' %}
+
+        <link rel="stylesheet" href = "{{ asset('bundles/dateTimepicker/css/bootstrap-datetimepicker.css') }}" />
+        <link rel="stylesheet" href = "{{ asset('bundles/ljtrtool/css/main.css') }}" />
+
+        <!-- RoleApproval New -->
+        <link rel="stylesheet" href = "{{ asset('bundles/matmtypeahead/css/typeahead.css') }}" />
+        <link rel="stylesheet" href = "{{ asset('bundles/bootstrap-switch/css/bootstrap-switch.css') }}" />
+
+        {% block head %}{% endblock %}
+    </head>
+     
+    <body role="document">
+
+        <nav class="navbar navbar-default" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span
+                            class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="http://www.jquery2dotnet.com">Brand</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span>Dashboard</a></li>
+                    <!--
+                        <li><a href="#"><span class="glyphicon glyphicon-calendar"></span>Calendar</a></li>
+                    -->
+
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                    class="glyphicon glyphicon-tasks"></span>Admin <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ path('event_index') }}">Veranstaltungen</a></li>
+                            <li><a href="{{ path('person_index') }}">Personenverwaltung</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{{ path('division_index') }}">Gliederungsverwaltung</a></li>
+                            <li><a href="{{ path('role_index') }}">Rollenverwaltung</a></li>
+                            <li><a href="{{ path('condition_index') }}">Anforderungsverwaltung</a></li>
+                        </ul>
+                    </li>
+
+                    {% if app.request.attributes.get('_route_params')['eventLinkName'] is defined  %}
+                        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                        class="glyphicon glyphicon-tasks"></span>{{ app.request.attributes.get('_route_params')['eventLinkName'] }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('event_show', {'eventLinkName': app.request.attributes.get('_route_params')['eventLinkName']}) }}">Veranstaltung</a></li>
+
+                                <li class="divider"></li>
+                                <li><a href="{{ path('roleApproval_index', {'eventLinkName': app.request.attributes.get('_route_params')['eventLinkName']}) }}">Rollenverwaltung</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-tasks"></span> <span class="badge bg-success" style="position: absolute;left: 30px;top: 9px;">{{ getTodoCount() }}</span> </a>
+                        <ul class="dropdown-menu" style="font-size: 11px;width: 300px;">
+                            {% for todo in getTodos() %}
+                                <li><a>{{ todo.todo|e }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                    <li class="dropdown"><!--
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                    class="glyphicon glyphicon-search"></span>Search <b class="caret"></b></a>
+                        <ul class="dropdown-menu" style="min-width: 300px;">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form class="navbar-form navbar-left" role="search">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" placeholder="Search" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-primary" type="button">
+                                                    Go!</button>
+                                            </span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>-->
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <!--
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                    class="glyphicon glyphicon-comment"></span>Chats <span class="label label-primary">42</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="label label-warning">7:00 AM</span>Hi :)</a></li>
+                            <li><a href="#"><span class="label label-warning">8:00 AM</span>How are you?</a></li>
+                            <li><a href="#"><span class="label label-warning">9:00 AM</span>What are you doing?</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" class="text-center">View All</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                                    class="glyphicon glyphicon-envelope"></span>Inbox <span class="label label-info">32</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#"><span class="label label-warning">4:00 AM</span>Favourites Snippet</a></li>
+                            <li><a href="#"><span class="label label-warning">4:30 AM</span>Email marketing</a></li>
+                            <li><a href="#"><span class="label label-warning">5:00 AM</span>Subscriber focused email
+                                    design</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" class="text-center">View All</a></li>
+                        </ul>
+                    </li>
+                    -->
+                    <li class="dropdown">
+
+
+                        <a {% if app.user %}href="#" data-toggle="dropdown" {% else %}href="{{ path('login') }}" {% endif %} class="dropdown-toggle">
+                            <span class="glyphicon glyphicon-user"></span>
+                            {% if app.user %}
+                                {{ app.user.username }} <b class="caret"></b>
+                            {% else %}
+                                Login
+                            {% endif %}
+                        </a>
+                        {% if app.user %}
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('person_show', {'personId': app.user.person.personId}) }}"><span class="glyphicon glyphicon-user"></span>Profile</a></li>
+                                <li><a href="#"><span class="glyphicon glyphicon-cog"></span>Settings</a></li>
+                                <li class="divider"></li>
+                                <li><a href="{{ path('logout') }}"><span class="glyphicon glyphicon-off"></span>Logout</a></li>
+                            </ul>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+         
+        <div class='container theme-showcase' role='main'>
+
+            <div class='row'>
+                <div class='col-md-12'>
+                    <!--Body content-->
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+             
+        </div>
+
+        {% if modal_dialog is defined and modal_dialog == true %}
+            <!-- Modal Dialog -->
+            <div class="modal fade" id="confirmDelete" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Unwiderruflich löschen</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bist du dir sicher, dass du fortfahren möchtest?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-danger" id="confirm">Löschen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+
+
+        {% block javascripts %}
+            {% javascripts 'bundles/bootstrap/js/jquery.js' %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% javascripts 'bundles/bootstrap/js/bootstrap.js' %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+        {% endblock %}
+         
+    </body>
+</html>

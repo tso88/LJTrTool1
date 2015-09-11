@@ -1,0 +1,46 @@
+{% extends "::base.html.twig" %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@LJTrToolRegistrationBundle/Resources/public/js/confirm.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block title %}Gliederungen{% endblock %}
+
+{% block body %}
+<h1>Übersicht Gliederungen</h1>
+    <table class="table table-hover">
+        <tr>
+            <th>Gliederung</th>
+            <th style="text-align: right">
+                <form method="GET" action="{{ path('division_new') }}" accept-charset="UTF-8" style="display:inline">
+                    <button class="btn btn-xs btn-success" type="submit">
+                        <i class="glyphicon glyphicon-plus"></i> Neu
+                    </button>
+                </form>
+            </th>
+        </tr>
+    {% for division in divisions %}
+        <tr>
+            <td><a href="{{ path('division_show', {'divisionId': division.divisionId}) }}">{{ division.divisionName|e }}</a></td>
+            <td style="text-align: right">
+                <form method="GET" action="{{ path('division_edit', {'divisionId': division.divisionId}) }}" accept-charset="UTF-8" style="display:inline">
+                    <button class="btn btn-xs btn-primary" type="submit">
+                        <i class="glyphicon glyphicon-pencil"></i> Ändern
+                    </button>
+                </form>
+                <form method="GET" action="{{ path('division_delete', {'divisionId': division.divisionId}) }}" accept-charset="UTF-8" style="display:inline">
+                    <button class="btn btn-xs btn-danger" type="button" data-toggle="modal" data-target="#confirmDelete" data-title="Gliederung löschen" data-message="Möchtest du die Gliederung {{ division.divisionName }} wirklich löschen?">
+                        <i class="glyphicon glyphicon-trash"></i> Löschen
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+{% endblock %}
+
+
